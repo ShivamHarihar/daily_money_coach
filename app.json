@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Daily Money Coach",
-    "slug": "daily-money-coach",
-    "scheme": "daily-money-coach",
+    "name": "Finzly",
+    "slug": "shivam",
+    "scheme": "finzly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,6 +12,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.shivamharihar.dailymoneycoach",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#0B0F17",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -25,6 +27,13 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "3fbe6482-fc00-4f92-9047-6b096eadd4ba"
+      }
+    },
+    "owner": "shivamh123s-team"
   }
 }
