@@ -80,7 +80,7 @@ export default function ProfileScreen() {
             <User size={32} color={Colors.primary} />
           </View>
           <View style={styles.profileText}>
-            <Text style={styles.userName}>{userProfile?.name || 'Daily Money Coach User'}</Text>
+            <Text style={styles.userName}>{userProfile?.name || 'MoneyMate User'}</Text>
             <Text style={styles.userSub}>Local Device Storage • 100% Offline</Text>
           </View>
         </View>
@@ -147,7 +147,7 @@ export default function ProfileScreen() {
           </Text>
         </View>
 
-        <Text style={styles.versionText}>Daily Money Coach v1.0 — Release Ready</Text>
+        <Text style={styles.versionText}>MoneyMate v1.0 — Release Ready</Text>
       </ScrollView>
 
       {/* Edit Plan Modal */}
