@@ -79,7 +79,7 @@ export default function DashboardScreen() {
         {/* Top Bar Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>MoneyMate</Text>
+            <Text style={styles.greeting}>SpendOrbit</Text>
             <View style={styles.dateBadge}>
               <Calendar size={13} color={Colors.textMuted} />
               <Text style={styles.dateText}>{currentDateFormatted}</Text>

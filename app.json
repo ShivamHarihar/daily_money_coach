@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "MoneyMate",
+    "name": "SpendOrbit",
     "slug": "shivam",
-    "scheme": "moneymate",
+    "scheme": "spendorbit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

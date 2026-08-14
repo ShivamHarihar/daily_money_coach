@@ -16,7 +16,7 @@ export default function WelcomeScreen() {
           <Wallet size={48} color={Colors.primary} />
         </View>
 
-        <Text style={styles.appName}>MoneyMate</Text>
+        <Text style={styles.appName}>SpendOrbit</Text>
         <Text style={styles.tagline}>"Know what you can safely spend today."</Text>
 
         <Text style={styles.description}>
