@@ -39,39 +39,55 @@ export default function HistoryScreen() {
     );
   };
 
+  // Header rendered inside FlatList so it scrolls together and keyboard avoidance works
+  const ListHeader = (
+    <View style={styles.header}>
+      <Text style={styles.title}>Expense History</Text>
+      <Text style={styles.subtitle}>
+        All transactions logged locally ({expenses.length} total).
+      </Text>
+
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <Search size={18} color={Colors.textMuted} />
+        <TextInput
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search category, note or payment..."
+          placeholderTextColor={Colors.textMuted}
+        />
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Expense History</Text>
-        <Text style={styles.subtitle}>
-          All transactions logged locally on your device ({expenses.length} total).
-        </Text>
-
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <Search size={18} color={Colors.textMuted} />
-          <TextInput
-            style={styles.searchInput}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search by category, note or payment method..."
-            placeholderTextColor={Colors.textMuted}
-          />
-        </View>
-      </View>
-
       {filteredExpenses.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>No expenses found</Text>
-          <Text style={styles.emptySub}>
-            {searchQuery ? 'Try searching with a different term' : 'Start logging expenses to build your history!'}
-          </Text>
-        </View>
+        // Show header + empty state together in a single scroll container
+        <FlatList
+          data={[]}
+          keyExtractor={() => 'empty'}
+          ListHeaderComponent={ListHeader}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyTitle}>No expenses found</Text>
+              <Text style={styles.emptySub}>
+                {searchQuery
+                  ? 'Try searching with a different term'
+                  : 'Start logging expenses to build your history!'}
+              </Text>
+            </View>
+          }
+          contentContainerStyle={styles.listContent}
+        />
       ) : (
         <FlatList
           data={filteredExpenses}
           keyExtractor={(item) => item.id}
+          ListHeaderComponent={ListHeader}
           contentContainerStyle={styles.listContent}
+          keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
             <View style={styles.expenseRow}>
               <View
@@ -86,8 +102,8 @@ export default function HistoryScreen() {
               </View>
 
               <View style={styles.expenseDetails}>
-                <Text style={styles.expenseCategory}>{item.category_name}</Text>
-                {item.note ? <Text style={styles.expenseNote}>{item.note}</Text> : null}
+                <Text style={styles.expenseCategory} numberOfLines={1}>{item.category_name}</Text>
+                {item.note ? <Text style={styles.expenseNote} numberOfLines={1}>{item.note}</Text> : null}
                 <Text style={styles.expenseDate}>
                   {item.date} • {item.payment_method}
                 </Text>
@@ -117,7 +133,8 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
   },
   title: {
     fontSize: 24,
@@ -140,6 +157,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     gap: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   searchInput: {
     flex: 1,
@@ -167,6 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
+    flexShrink: 0,
   },
   categoryBadgeText: {
     fontSize: 16,
@@ -175,6 +194,7 @@ const styles = StyleSheet.create({
   },
   expenseDetails: {
     flex: 1,
+    marginRight: Spacing.sm,
   },
   expenseCategory: {
     fontSize: 14,
@@ -193,17 +213,17 @@ const styles = StyleSheet.create({
   amountGroup: {
     alignItems: 'flex-end',
     gap: 6,
+    flexShrink: 0,
   },
   expenseAmount: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
     color: Colors.danger,
   },
   emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: Spacing.xxl,
     paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
   },
   emptyTitle: {
     fontSize: 16,

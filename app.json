@@ -20,7 +20,13 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "pan",
+      "androidNavigationBar": {
+        "visible": "sticky-immersive",
+        "barStyle": "dark-content",
+        "backgroundColor": "#161F2E"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

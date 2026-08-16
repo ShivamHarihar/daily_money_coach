@@ -2,7 +2,9 @@ import { PiggyBank, Plus, Target, Trash2 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Alert,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -68,7 +70,9 @@ export default function GoalsScreen() {
             <PiggyBank size={24} color={Colors.primary} />
             <Text style={styles.primaryTitle}>Monthly Savings Plan</Text>
           </View>
-          <Text style={styles.primaryAmount}>{formatCurrency(summary.savingsTarget)}/month</Text>
+          <Text style={styles.primaryAmount} numberOfLines={1} adjustsFontSizeToFit>
+            {formatCurrency(summary.savingsTarget)}/month
+          </Text>
 
           <View style={styles.progressBg}>
             <View
@@ -108,10 +112,13 @@ export default function GoalsScreen() {
                       <View style={styles.goalIconCircle}>
                         <Target size={18} color={Colors.primary} />
                       </View>
-                      <Text style={styles.goalName}>{goal.name}</Text>
+                      <Text style={styles.goalName} numberOfLines={1}>{goal.name}</Text>
                     </View>
 
-                    <TouchableOpacity onPress={() => handleDeleteGoal(goal.id, goal.name)}>
+                    <TouchableOpacity
+                      onPress={() => handleDeleteGoal(goal.id, goal.name)}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
                       <Trash2 size={16} color={Colors.textMuted} />
                     </TouchableOpacity>
                   </View>
@@ -138,8 +145,12 @@ export default function GoalsScreen() {
       </ScrollView>
 
       {/* Add Goal Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
+      <Modal visible={modalVisible} animationType="slide" transparent statusBarTranslucent>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.kavWrapper}
+        >
+          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setModalVisible(false)} />
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>New Savings Goal</Text>
 
@@ -172,7 +183,7 @@ export default function GoalsScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -266,7 +277,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    borderStyle: 'dashed',
+    // removed borderStyle: 'dashed' — not supported on Android
   },
   emptyTitle: {
     fontSize: 15,
@@ -300,6 +311,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
+    flex: 1,
+    marginRight: Spacing.sm,
   },
   goalIconCircle: {
     width: 32,
@@ -308,11 +321,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surfaceHover,
     justifyContent: 'center',
     alignItems: 'center',
+    flexShrink: 0,
   },
   goalName: {
     fontSize: 15,
     fontWeight: '700',
     color: Colors.textPrimary,
+    flex: 1,
   },
   goalAmountRow: {
     flexDirection: 'row',
@@ -345,16 +360,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.textMuted,
   },
-  modalOverlay: {
+  // Modal styles
+  kavWrapper: {
     flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
   },
   modalContent: {
     backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
     padding: Spacing.lg,
+    paddingBottom: Spacing.xxl,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },

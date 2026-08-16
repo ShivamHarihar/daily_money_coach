@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { ArrowRight, ShieldCheck, Sparkles, Target, Wallet } from 'lucide-react-native';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BorderRadius, Colors, Spacing } from '../../src/constants/theme';
 
@@ -10,65 +10,71 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {/* Hero Icon */}
-        <View style={styles.heroBadge}>
-          <Wallet size={48} color={Colors.primary} />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        <View style={styles.content}>
+          {/* Hero Icon */}
+          <View style={styles.heroBadge}>
+            <Wallet size={48} color={Colors.primary} />
+          </View>
+
+          <Text style={styles.appName}>SpendOrbit</Text>
+          <Text style={styles.tagline}>"Know what you can safely spend today."</Text>
+
+          <Text style={styles.description}>
+            Don't just track your past spending. Transform your monthly income into a simple daily safe limit and build financial freedom.
+          </Text>
+
+          {/* Feature Pill Highlights */}
+          <View style={styles.featuresContainer}>
+            <View style={styles.featureItem}>
+              <View style={styles.iconCircle}>
+                <Sparkles size={20} color={Colors.primary} />
+              </View>
+              <View style={styles.featureText}>
+                <Text style={styles.featureTitle}>Daily Safe Spend</Text>
+                <Text style={styles.featureSub}>Instant clarity on how much you can spend today</Text>
+              </View>
+            </View>
+
+            <View style={styles.featureItem}>
+              <View style={styles.iconCircle}>
+                <Target size={20} color={Colors.secondary} />
+              </View>
+              <View style={styles.featureText}>
+                <Text style={styles.featureTitle}>Can I Afford This?</Text>
+                <Text style={styles.featureSub}>Real-time financial impact for purchases</Text>
+              </View>
+            </View>
+
+            <View style={styles.featureItem}>
+              <View style={styles.iconCircle}>
+                <ShieldCheck size={20} color={Colors.primary} />
+              </View>
+              <View style={styles.featureText}>
+                <Text style={styles.featureTitle}>100% Private & Offline</Text>
+                <Text style={styles.featureSub}>No account required. Your data stays on your phone.</Text>
+              </View>
+            </View>
+          </View>
         </View>
 
-        <Text style={styles.appName}>SpendOrbit</Text>
-        <Text style={styles.tagline}>"Know what you can safely spend today."</Text>
-
-        <Text style={styles.description}>
-          Don't just track your past spending. Transform your monthly income into a simple daily safe limit and build financial freedom.
-        </Text>
-
-        {/* Feature Pill Highlights */}
-        <View style={styles.featuresContainer}>
-          <View style={styles.featureItem}>
-            <View style={styles.iconCircle}>
-              <Sparkles size={20} color={Colors.primary} />
-            </View>
-            <View style={styles.featureText}>
-              <Text style={styles.featureTitle}>Daily Safe Spend</Text>
-              <Text style={styles.featureSub}>Instant clarity on how much you can spend today</Text>
-            </View>
-          </View>
-
-          <View style={styles.featureItem}>
-            <View style={styles.iconCircle}>
-              <Target size={20} color={Colors.secondary} />
-            </View>
-            <View style={styles.featureText}>
-              <Text style={styles.featureTitle}>Can I Afford This?</Text>
-              <Text style={styles.featureSub}>Real-time financial impact for purchases</Text>
-            </View>
-          </View>
-
-          <View style={styles.featureItem}>
-            <View style={styles.iconCircle}>
-              <ShieldCheck size={20} color={Colors.primary} />
-            </View>
-            <View style={styles.featureText}>
-              <Text style={styles.featureTitle}>100% Private & Offline</Text>
-              <Text style={styles.featureSub}>No account required. Your data stays on your phone.</Text>
-            </View>
-          </View>
+        {/* Action Footer — inside scroll so it's always reachable on short phones */}
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            activeOpacity={0.8}
+            onPress={() => router.push('/(onboarding)/income')}
+          >
+            <Text style={styles.buttonText}>Get Started</Text>
+            <ArrowRight size={20} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.stepIndicator}>Step 1 of 5</Text>
         </View>
-      </View>
-
-      {/* Action Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          activeOpacity={0.8}
-          onPress={() => router.push('/(onboarding)/income')}
-        >
-          <Text style={styles.buttonText}>Get Started</Text>
-          <ArrowRight size={20} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.stepIndicator}>Step 1 of 5</Text>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -77,14 +83,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
-    justifyContent: 'space-between',
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: Spacing.lg,
+    justifyContent: 'space-between',
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: Spacing.xl,
+    paddingBottom: Spacing.lg,
   },
   heroBadge: {
     width: 96,
@@ -117,12 +127,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.sm,
   },
   featuresContainer: {
     width: '100%',
     gap: Spacing.md,
-    marginTop: Spacing.sm,
   },
   featureItem: {
     flexDirection: 'row',
@@ -141,6 +150,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
+    flexShrink: 0,
   },
   featureText: {
     flex: 1,
