@@ -60,7 +60,9 @@ export default function AddExpenseModal() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        // On Android 'height' can push the save button off-screen.
+        // Using 'padding' on iOS and undefined on Android keeps content stable.
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
         {/* Header */}
@@ -71,7 +73,11 @@ export default function AddExpenseModal() {
           </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           {/* Amount Box */}
           <View style={styles.amountContainer}>
             <Text style={styles.amountPrefix}>₹</Text>
@@ -90,7 +96,7 @@ export default function AddExpenseModal() {
           </View>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          {/* Quick Preset Amount Buttons */}
+          {/* Quick Preset Amount Buttons — use flexWrap so they never overflow */}
           <View style={styles.quickAmountGrid}>
             {[50, 100, 200, 500, 1000].map((val) => (
               <TouchableOpacity
@@ -149,6 +155,7 @@ export default function AddExpenseModal() {
                       styles.pmText,
                       isSelected && styles.pmTextSelected,
                     ]}
+                    numberOfLines={1}
                   >
                     {pm}
                   </Text>
@@ -209,6 +216,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
+    paddingBottom: Spacing.xl,
   },
   amountContainer: {
     flexDirection: 'row',
@@ -238,8 +246,10 @@ const styles = StyleSheet.create({
     color: Colors.danger,
     marginBottom: Spacing.sm,
   },
+  // flexWrap ensures chips wrap to next line on narrow screens
   quickAmountGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.xs,
     marginBottom: Spacing.lg,
   },
@@ -282,11 +292,13 @@ const styles = StyleSheet.create({
   },
   paymentMethodRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
   pmChip: {
     flex: 1,
+    minWidth: 70,
     backgroundColor: Colors.cardBackground,
     borderColor: Colors.cardBorder,
     borderWidth: 1,

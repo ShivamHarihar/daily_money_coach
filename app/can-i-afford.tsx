@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BorderRadius, Colors, Shadows, Spacing } from '../src/constants/theme';
+import { BorderRadius, Colors, Spacing } from '../src/constants/theme';
 import { useFinanceStore } from '../src/store/useFinanceStore';
 import { calculateAffordability, formatCurrency } from '../src/utils/calculator';
 
@@ -34,7 +34,7 @@ export default function CanIAffordScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
         {/* Header */}
@@ -112,10 +112,11 @@ export default function CanIAffordScreen() {
                             : Colors.danger,
                       },
                     ]}
+                    numberOfLines={2}
                   >
                     {analysis.title}
                   </Text>
-                  <Text style={styles.decisionSub}>{itemTitle || 'This purchase'}</Text>
+                  <Text style={styles.decisionSub} numberOfLines={1}>{itemTitle || 'This purchase'}</Text>
                 </View>
               </View>
 
@@ -133,7 +134,7 @@ export default function CanIAffordScreen() {
                 </View>
 
                 <View style={styles.impactRow}>
-                  <Text style={styles.impactLabel}>New Daily Limit (after purchase)</Text>
+                  <Text style={styles.impactLabel}>New Daily Limit (after)</Text>
                   <Text
                     style={[
                       styles.impactValue,
@@ -213,6 +214,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
+    paddingBottom: Spacing.xl,
   },
   subtitle: {
     fontSize: 13,
@@ -280,7 +282,7 @@ const styles = StyleSheet.create({
   },
   badgeRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
@@ -288,16 +290,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   decisionTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
+    lineHeight: 22,
   },
   decisionSub: {
     fontSize: 12,
     color: Colors.textMuted,
     fontWeight: '600',
+    marginTop: 2,
   },
   decisionDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.textPrimary,
     lineHeight: 20,
     marginBottom: Spacing.md,
@@ -314,10 +318,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 4,
+    flexWrap: 'wrap',
+    gap: 4,
   },
   impactLabel: {
     fontSize: 12,
     color: Colors.textSecondary,
+    flexShrink: 1,
   },
   impactValue: {
     fontSize: 13,
@@ -331,7 +338,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    borderStyle: 'dashed',
   },
   promptTitle: {
     fontSize: 15,

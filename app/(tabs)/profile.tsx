@@ -1,9 +1,6 @@
 import { useRouter } from 'expo-router';
 import {
   Building,
-  CreditCard,
-  HelpCircle,
-  Info,
   PiggyBank,
   RefreshCw,
   ShieldCheck,
@@ -13,7 +10,9 @@ import {
 import React, { useState } from 'react';
 import {
   Alert,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -88,7 +87,16 @@ export default function ProfileScreen() {
         {/* Active Money Plan Settings */}
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionTitle}>Active Financial Formula</Text>
-          <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => {
+              // Sync latest values into modal state before opening
+              setIncomeInput(String(userProfile?.monthly_income || 0));
+              setFixedInput(String(userProfile?.fixed_expenses || 0));
+              setSavingsInput(String(userProfile?.savings_target || 0));
+              setModalVisible(true);
+            }}
+          >
             <Text style={styles.editText}>Edit Plan</Text>
           </TouchableOpacity>
         </View>
@@ -99,7 +107,7 @@ export default function ProfileScreen() {
               <Wallet size={18} color={Colors.primary} />
               <Text style={styles.planLabel}>Monthly Income</Text>
             </View>
-            <Text style={styles.planValue}>
+            <Text style={styles.planValue} numberOfLines={1}>
               {formatCurrency(userProfile?.monthly_income || 0)}
             </Text>
           </View>
@@ -111,7 +119,7 @@ export default function ProfileScreen() {
               <Building size={18} color={Colors.danger} />
               <Text style={styles.planLabel}>Fixed Expenses</Text>
             </View>
-            <Text style={[styles.planValue, { color: Colors.danger }]}>
+            <Text style={[styles.planValue, { color: Colors.danger }]} numberOfLines={1}>
               {formatCurrency(userProfile?.fixed_expenses || 0)}
             </Text>
           </View>
@@ -123,14 +131,16 @@ export default function ProfileScreen() {
               <PiggyBank size={18} color={Colors.secondary} />
               <Text style={styles.planLabel}>Savings Target</Text>
             </View>
-            <Text style={[styles.planValue, { color: Colors.secondary }]}>
+            <Text style={[styles.planValue, { color: Colors.secondary }]} numberOfLines={1}>
               {formatCurrency(userProfile?.savings_target || 0)}
             </Text>
           </View>
         </View>
 
         {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>App Preferences</Text>
+        <Text style={[styles.sectionTitle, { marginTop: Spacing.md, marginBottom: Spacing.sm }]}>
+          App Preferences
+        </Text>
 
         <View style={styles.menuContainer}>
           <TouchableOpacity style={styles.menuItem} onPress={handleReRunOnboarding}>
@@ -150,47 +160,63 @@ export default function ProfileScreen() {
         <Text style={styles.versionText}>SpendOrbit v1.0 — Release Ready</Text>
       </ScrollView>
 
-      {/* Edit Plan Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
+      {/* Edit Plan Modal — bottom sheet style with KAV for keyboard */}
+      <Modal visible={modalVisible} animationType="slide" transparent statusBarTranslucent>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.kavWrapper}
+        >
+          <TouchableOpacity
+            style={styles.modalBackdrop}
+            activeOpacity={1}
+            onPress={() => setModalVisible(false)}
+          />
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Update Monthly Formula</Text>
 
-            <Text style={styles.inputLabel}>Monthly Income (₹)</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={incomeInput}
-              onChangeText={(t) => setIncomeInput(t.replace(/[^0-9]/g, ''))}
-              keyboardType="number-pad"
-            />
+            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+              <Text style={styles.inputLabel}>Monthly Income (₹)</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={incomeInput}
+                onChangeText={(t) => setIncomeInput(t.replace(/[^0-9]/g, ''))}
+                keyboardType="number-pad"
+                placeholder="e.g. 60000"
+                placeholderTextColor={Colors.textMuted}
+              />
 
-            <Text style={styles.inputLabel}>Fixed Expenses (Rent, Bills, EMI) (₹)</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={fixedInput}
-              onChangeText={(t) => setFixedInput(t.replace(/[^0-9]/g, ''))}
-              keyboardType="number-pad"
-            />
+              <Text style={styles.inputLabel}>Fixed Expenses — Rent, Bills, EMI (₹)</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={fixedInput}
+                onChangeText={(t) => setFixedInput(t.replace(/[^0-9]/g, ''))}
+                keyboardType="number-pad"
+                placeholder="e.g. 15000"
+                placeholderTextColor={Colors.textMuted}
+              />
 
-            <Text style={styles.inputLabel}>Monthly Savings Goal (₹)</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={savingsInput}
-              onChangeText={(t) => setSavingsInput(t.replace(/[^0-9]/g, ''))}
-              keyboardType="number-pad"
-            />
+              <Text style={styles.inputLabel}>Monthly Savings Goal (₹)</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={savingsInput}
+                onChangeText={(t) => setSavingsInput(t.replace(/[^0-9]/g, ''))}
+                keyboardType="number-pad"
+                placeholder="e.g. 5000"
+                placeholderTextColor={Colors.textMuted}
+              />
 
-            <View style={styles.modalActions}>
-              <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelText}>Cancel</Text>
-              </TouchableOpacity>
+              <View style={styles.modalActions}>
+                <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.cancelText}>Cancel</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity style={styles.saveBtn} onPress={handleUpdatePlan}>
-                <Text style={styles.saveText}>Save Changes</Text>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity style={styles.saveBtn} onPress={handleUpdatePlan}>
+                  <Text style={styles.saveText}>Save Changes</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -236,6 +262,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primarySubtle,
     justifyContent: 'center',
     alignItems: 'center',
+    flexShrink: 0,
   },
   profileText: {
     flex: 1,
@@ -289,6 +316,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flex: 1,
   },
   planLabel: {
     fontSize: 14,
@@ -298,6 +326,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     color: Colors.primary,
+    flexShrink: 0,
   },
   divider: {
     height: 1,
@@ -309,7 +338,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    marginTop: Spacing.sm,
     marginBottom: Spacing.lg,
   },
   menuItem: {
@@ -344,18 +372,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: Spacing.sm,
   },
-  modalOverlay: {
+  // Modal styles — bottom sheet
+  kavWrapper: {
     flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
   },
   modalContent: {
     backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
     padding: Spacing.lg,
+    paddingBottom: Spacing.xxl,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
+    maxHeight: '85%',
   },
   modalTitle: {
     fontSize: 18,
@@ -383,6 +417,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.md,
     marginTop: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   cancelBtn: {
     flex: 1,

@@ -13,7 +13,7 @@ import {
 import React from 'react';
 import {
   Alert,
-  FlatList,
+  Dimensions,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -26,6 +26,10 @@ import { BorderRadius, Colors, Shadows, Spacing } from '../../src/constants/them
 import { useFinanceStore } from '../../src/store/useFinanceStore';
 import { Expense } from '../../src/types';
 import { formatCurrency, isToday } from '../../src/utils/calculator';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+// Scale hero font size for smaller screens (SE = 375, normal = 390+)
+const heroFontSize = SCREEN_WIDTH < 380 ? 36 : SCREEN_WIDTH < 414 ? 42 : 48;
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -97,7 +101,9 @@ export default function DashboardScreen() {
         {/* HERO SAFE SPENDING CARD */}
         <View style={[styles.heroCard, Shadows.glowGreen]}>
           <Text style={styles.heroSubHeader}>SAFE TO SPEND TODAY</Text>
-          <Text style={styles.heroAmount}>{formatCurrency(summary.safeDailyLimit)}</Text>
+          <Text style={[styles.heroAmount, { fontSize: heroFontSize }]} numberOfLines={1} adjustsFontSizeToFit>
+            {formatCurrency(summary.safeDailyLimit)}
+          </Text>
 
           {/* Today Spending Bar */}
           <View style={styles.progressBarBackground}>
@@ -117,18 +123,19 @@ export default function DashboardScreen() {
           <View style={styles.todayStatsRow}>
             <View style={styles.statItem}>
               <View style={[styles.statDot, { backgroundColor: Colors.accent }]} />
-              <Text style={styles.statLabel}>Spent Today: </Text>
-              <Text style={styles.statValue}>{formatCurrency(summary.spentToday)}</Text>
+              <Text style={styles.statLabel}>Spent: </Text>
+              <Text style={styles.statValue} numberOfLines={1}>{formatCurrency(summary.spentToday)}</Text>
             </View>
 
             <View style={styles.statItem}>
               <View style={[styles.statDot, { backgroundColor: Colors.primary }]} />
-              <Text style={styles.statLabel}>Remaining Today: </Text>
+              <Text style={styles.statLabel}>Left: </Text>
               <Text
                 style={[
                   styles.statValue,
                   { color: summary.remainingToday < 0 ? Colors.danger : Colors.primary },
                 ]}
+                numberOfLines={1}
               >
                 {formatCurrency(summary.remainingToday)}
               </Text>
@@ -153,7 +160,7 @@ export default function DashboardScreen() {
             onPress={() => router.push('/can-i-afford')}
           >
             <HelpCircle size={20} color={Colors.textPrimary} />
-            <Text style={styles.canIAffordText}>Can I Afford This?</Text>
+            <Text style={styles.canIAffordText}>Can I Afford?</Text>
           </TouchableOpacity>
         </View>
 
@@ -164,13 +171,13 @@ export default function DashboardScreen() {
             <View style={styles.monthlyRow}>
               <View style={styles.monthlyItem}>
                 <Text style={styles.monthlyLabel}>Monthly Income</Text>
-                <Text style={styles.monthlyValue}>
+                <Text style={styles.monthlyValue} numberOfLines={1} adjustsFontSizeToFit>
                   {formatCurrency(summary.totalMonthlyIncome)}
                 </Text>
               </View>
               <View style={styles.monthlyItem}>
                 <Text style={styles.monthlyLabel}>Fixed Expenses</Text>
-                <Text style={[styles.monthlyValue, { color: Colors.danger }]}>
+                <Text style={[styles.monthlyValue, { color: Colors.danger }]} numberOfLines={1} adjustsFontSizeToFit>
                   {formatCurrency(summary.totalFixedExpenses)}
                 </Text>
               </View>
@@ -185,7 +192,7 @@ export default function DashboardScreen() {
                   <PiggyBank size={18} color={Colors.primary} />
                   <Text style={styles.savingsTitle}>Monthly Savings Goal</Text>
                 </View>
-                <Text style={styles.savingsAmount}>
+                <Text style={styles.savingsAmount} numberOfLines={1}>
                   {formatCurrency(summary.savingsTarget)}
                 </Text>
               </View>
@@ -235,9 +242,9 @@ export default function DashboardScreen() {
                     </Text>
                   </View>
                   <View style={styles.expenseDetails}>
-                    <Text style={styles.expenseCategory}>{expense.category_name}</Text>
+                    <Text style={styles.expenseCategory} numberOfLines={1}>{expense.category_name}</Text>
                     {expense.note ? (
-                      <Text style={styles.expenseNote}>{expense.note}</Text>
+                      <Text style={styles.expenseNote} numberOfLines={1}>{expense.note}</Text>
                     ) : null}
                     <Text style={styles.expenseMethod}>{expense.payment_method}</Text>
                   </View>
@@ -301,34 +308,33 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.cardBackground,
     borderColor: Colors.cardBorder,
     borderWidth: 1,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
-    gap: 6,
+    gap: 4,
   },
   affordHeaderText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     color: Colors.textPrimary,
   },
   heroCard: {
     backgroundColor: Colors.cardBackground,
     borderRadius: BorderRadius.xl,
-    padding: Spacing.xl,
+    padding: Spacing.lg,
     borderWidth: 2,
     borderColor: Colors.primary,
     marginVertical: Spacing.md,
     alignItems: 'center',
   },
   heroSubHeader: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '800',
     color: Colors.primary,
     letterSpacing: 1.5,
     marginBottom: 4,
   },
   heroAmount: {
-    fontSize: 48,
     fontWeight: '900',
     color: Colors.textPrimary,
     letterSpacing: -1,
@@ -347,8 +353,10 @@ const styles = StyleSheet.create({
   },
   todayStatsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     width: '100%',
+    flexWrap: 'wrap',
+    gap: 4,
     marginTop: Spacing.xs,
   },
   statItem: {
@@ -359,7 +367,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    marginRight: 6,
+    marginRight: 5,
   },
   statLabel: {
     fontSize: 12,
@@ -386,7 +394,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   addExpenseText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
     color: '#0B0F17',
   },
@@ -403,7 +411,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   canIAffordText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     color: Colors.textPrimary,
   },
@@ -437,6 +445,7 @@ const styles = StyleSheet.create({
   monthlyRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: Spacing.md,
   },
   monthlyItem: {
     flex: 1,
@@ -468,11 +477,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    flex: 1,
   },
   savingsTitle: {
     fontSize: 13,
     fontWeight: '700',
     color: Colors.textPrimary,
+    flexShrink: 1,
   },
   savingsAmount: {
     fontSize: 14,
@@ -504,7 +515,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    borderStyle: 'dashed',
+    // dashed not used — not supported on Android
   },
   emptyTitle: {
     fontSize: 15,
@@ -537,6 +548,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
+    flexShrink: 0,
   },
   categoryBadgeText: {
     fontSize: 16,
@@ -545,6 +557,7 @@ const styles = StyleSheet.create({
   },
   expenseDetails: {
     flex: 1,
+    marginRight: Spacing.sm,
   },
   expenseCategory: {
     fontSize: 14,
@@ -562,9 +575,10 @@ const styles = StyleSheet.create({
   expenseAmountGroup: {
     alignItems: 'flex-end',
     gap: 4,
+    flexShrink: 0,
   },
   expenseAmount: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
     color: Colors.danger,
   },
