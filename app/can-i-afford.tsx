@@ -40,7 +40,7 @@ export default function CanIAffordScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerTitleGroup}>
-            <Sparkles size={20} color={Colors.secondary} />
+            <Sparkles size={20} color={Colors.primary} />
             <Text style={styles.headerTitle}>Can I Afford This?</Text>
           </View>
           <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
@@ -48,7 +48,7 @@ export default function CanIAffordScreen() {
           </TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <Text style={styles.subtitle}>
             Enter an intended purchase amount to see how it impacts your daily budget and monthly savings.
           </Text>
@@ -92,9 +92,9 @@ export default function CanIAffordScreen() {
             >
               <View style={styles.badgeRow}>
                 {analysis.severity === 'safe' ? (
-                  <CheckCircle size={28} color={Colors.primary} />
+                  <CheckCircle size={28} color={Colors.essentials} />
                 ) : analysis.severity === 'caution' ? (
-                  <AlertTriangle size={28} color={Colors.warning} />
+                  <AlertTriangle size={28} color={Colors.lifestyle} />
                 ) : (
                   <XCircle size={28} color={Colors.danger} />
                 )}
@@ -106,9 +106,9 @@ export default function CanIAffordScreen() {
                       {
                         color:
                           analysis.severity === 'safe'
-                            ? Colors.primary
+                            ? Colors.essentials
                             : analysis.severity === 'caution'
-                            ? Colors.warning
+                            ? Colors.lifestyle
                             : Colors.danger,
                       },
                     ]}
@@ -141,8 +141,8 @@ export default function CanIAffordScreen() {
                       {
                         color:
                           analysis.newDailyLimit < summary.safeDailyLimit
-                            ? Colors.warning
-                            : Colors.primary,
+                            ? Colors.lifestyle
+                            : Colors.essentials,
                       },
                     ]}
                   >
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     paddingBottom: Spacing.xl,
   },
@@ -225,16 +225,16 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
     marginBottom: Spacing.xs,
   },
   textInput: {
-    backgroundColor: Colors.cardBackground,
+    backgroundColor: '#FFFFFF',
     borderRadius: BorderRadius.md,
-    borderColor: Colors.cardBorder,
+    borderColor: '#E5E7EB',
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
+    paddingVertical: 12,
     fontSize: 15,
     color: Colors.textPrimary,
     marginBottom: Spacing.md,
@@ -242,18 +242,18 @@ const styles = StyleSheet.create({
   amountInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
+    backgroundColor: '#FFFFFF',
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderWidth: 2,
-    borderColor: Colors.secondary,
+    borderColor: Colors.primary,
     marginBottom: Spacing.xl,
   },
   currencyPrefix: {
     fontSize: 32,
     fontWeight: '900',
-    color: Colors.secondary,
+    color: Colors.primary,
     marginRight: Spacing.xs,
   },
   amountInput: {
@@ -265,20 +265,18 @@ const styles = StyleSheet.create({
   analysisCard: {
     borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
-    borderWidth: 2,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
     marginBottom: Spacing.xl,
   },
   cardSafe: {
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    borderColor: Colors.primary,
+    backgroundColor: '#E8F5E9',
   },
   cardCaution: {
-    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-    borderColor: Colors.warning,
+    backgroundColor: '#FEF3C7',
   },
   cardWarning: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderColor: Colors.danger,
+    backgroundColor: '#FEE2E2',
   },
   badgeRow: {
     flexDirection: 'row',
@@ -308,7 +306,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.cardBorder,
+    backgroundColor: '#F3F4F6',
     marginVertical: Spacing.md,
   },
   impactTable: {
@@ -332,12 +330,12 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
   emptyPrompt: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
   },
   promptTitle: {
     fontSize: 15,
@@ -356,12 +354,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderTopWidth: 1,
-    borderTopColor: Colors.cardBorder,
+    borderTopColor: '#F3F4F6',
   },
   closeModalButton: {
     width: '100%',
     height: 52,
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#F3F4F6',
     borderRadius: BorderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',

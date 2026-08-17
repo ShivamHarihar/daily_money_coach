@@ -21,7 +21,7 @@ export default function WelcomeScreen() {
             <Wallet size={48} color={Colors.primary} />
           </View>
 
-          <Text style={styles.appName}>SpendOrbit</Text>
+          <Text style={styles.appName}>Daily Money Coach</Text>
           <Text style={styles.tagline}>"Know what you can safely spend today."</Text>
 
           <Text style={styles.description}>
@@ -62,7 +62,7 @@ export default function WelcomeScreen() {
           </View>
         </View>
 
-        {/* Action Footer — inside scroll so it's always reachable on short phones */}
+        {/* Action Footer */}
         <View style={styles.footer}>
           <TouchableOpacity
             style={styles.primaryButton}
@@ -70,7 +70,7 @@ export default function WelcomeScreen() {
             onPress={() => router.push('/(onboarding)/income')}
           >
             <Text style={styles.buttonText}>Get Started</Text>
-            <ArrowRight size={20} color="#000" />
+            <ArrowRight size={20} color="#FFF" />
           </TouchableOpacity>
           <Text style={styles.stepIndicator}>Step 1 of 5</Text>
         </View>
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
     justifyContent: 'space-between',
   },
   content: {
@@ -100,12 +100,12 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: Colors.primarySubtle,
+    backgroundColor: '#EFF6FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.25)',
+    borderColor: 'rgba(37, 99, 235, 0.1)',
   },
   appName: {
     fontSize: 28,
@@ -136,17 +136,17 @@ const styles = StyleSheet.create({
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
+    backgroundColor: '#FFFFFF',
     padding: Spacing.md,
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
   },
   iconCircle: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#EFF6FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   featureSub: {
     fontSize: 12,
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
   },
   footer: {
     paddingVertical: Spacing.lg,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     width: '100%',
-    height: 56,
+    height: 54,
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius.lg,
     flexDirection: 'row',
@@ -183,11 +183,11 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0B0F17',
+    color: '#FFF',
   },
   stepIndicator: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
   },
 });

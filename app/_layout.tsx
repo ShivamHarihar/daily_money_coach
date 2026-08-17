@@ -7,15 +7,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Colors } from '../src/constants/theme';
 import { useFinanceStore } from '../src/store/useFinanceStore';
 
-// Set Android navigation bar color to match the tab bar background
+// Set Android navigation bar color to match the tab bar background (White)
 if (Platform.OS === 'android') {
-  SystemUI.setBackgroundColorAsync(Colors.cardBackground);
+  SystemUI.setBackgroundColorAsync('#FFFFFF');
 }
 
 export default function RootLayout() {
   const { loadInitialData, isLoading, isInitialized, userProfile } = useFinanceStore();
   const router = useRouter();
-  // useRootNavigationState tells us when the navigator is actually mounted
   const navigationState = useRootNavigationState();
   const hasRedirected = useRef(false);
 
@@ -23,15 +22,12 @@ export default function RootLayout() {
     loadInitialData();
   }, []);
 
-  // Wait for BOTH the navigation context AND data to be ready before redirecting.
-  // Without checking navigationState?.key, router.replace() fires before the
-  // Stack navigator is mounted → "ContextNavigator" error.
   useEffect(() => {
     if (
-      !navigationState?.key ||   // navigator not mounted yet
-      !isInitialized ||          // DB data not loaded yet
-      isLoading ||               // still loading
-      hasRedirected.current      // already redirected
+      !navigationState?.key ||
+      !isInitialized ||
+      isLoading ||
+      hasRedirected.current
     ) {
       return;
     }
@@ -47,7 +43,8 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="light" backgroundColor={Colors.background} />
+      {/* Dark status bar content for light background */}
+      <StatusBar style="dark" backgroundColor={Colors.background} />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -75,7 +72,7 @@ export default function RootLayout() {
         />
       </Stack>
 
-      {/* Loading overlay — shown on top of the Stack while data loads */}
+      {/* Loading overlay */}
       {(!isInitialized || isLoading) && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={Colors.primary} />

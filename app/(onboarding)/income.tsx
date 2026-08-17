@@ -40,10 +40,10 @@ export default function IncomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
@@ -111,7 +111,7 @@ export default function IncomeScreen() {
         <View style={styles.footer}>
           <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8} onPress={handleNext}>
             <Text style={styles.buttonText}>Continue</Text>
-            <ArrowRight size={20} color="#000" />
+            <ArrowRight size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xl,
   },
   header: {
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
   },
   sectionHeader: {
     marginTop: Spacing.md,
@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
     borderWidth: 2,
     borderColor: Colors.primary,
     paddingHorizontal: Spacing.lg,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   presetLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
     marginTop: Spacing.md,
     marginBottom: Spacing.sm,
   },
@@ -199,15 +199,15 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   presetChip: {
-    backgroundColor: Colors.cardBackground,
-    borderColor: Colors.cardBorder,
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E5E7EB',
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: 8,
     borderRadius: BorderRadius.full,
   },
   presetChipSelected: {
-    backgroundColor: Colors.primarySubtle,
+    backgroundColor: '#EFF6FF',
     borderColor: Colors.primary,
   },
   presetText: {
@@ -222,24 +222,26 @@ const styles = StyleSheet.create({
   infoBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#FFFFFF',
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     gap: Spacing.sm,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   infoText: {
     flex: 1,
     fontSize: 12,
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
     lineHeight: 18,
   },
   footer: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
   },
   primaryButton: {
     width: '100%',
-    height: 56,
+    height: 54,
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius.lg,
     flexDirection: 'row',
@@ -250,6 +252,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0B0F17',
+    color: '#FFF',
   },
 });

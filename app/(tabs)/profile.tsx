@@ -51,7 +51,7 @@ export default function ProfileScreen() {
   const handleReRunOnboarding = () => {
     Alert.alert(
       'Re-run Onboarding',
-      'Do you want to re-run the 5-step money setup wizard?',
+      'Do you want to re-run the setup wizard?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -67,19 +67,19 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.title}>Profile & Settings</Text>
-          <Text style={styles.subtitle}>Manage your income, fixed costs, and app setup.</Text>
+          <Text style={styles.title}>Settings</Text>
+          <Text style={styles.subtitle}>Manage your profile parameters and financial setup.</Text>
         </View>
 
         {/* User Card */}
         <View style={styles.profileCard}>
           <View style={styles.avatarCircle}>
-            <User size={32} color={Colors.primary} />
+            <User size={28} color={Colors.primary} />
           </View>
           <View style={styles.profileText}>
-            <Text style={styles.userName}>{userProfile?.name || 'SpendOrbit User'}</Text>
+            <Text style={styles.userName}>{userProfile?.name || 'User'}</Text>
             <Text style={styles.userSub}>Local Device Storage • 100% Offline</Text>
           </View>
         </View>
@@ -90,7 +90,6 @@ export default function ProfileScreen() {
           <TouchableOpacity
             style={styles.editButton}
             onPress={() => {
-              // Sync latest values into modal state before opening
               setIncomeInput(String(userProfile?.monthly_income || 0));
               setFixedInput(String(userProfile?.fixed_expenses || 0));
               setSavingsInput(String(userProfile?.savings_target || 0));
@@ -153,14 +152,14 @@ export default function ProfileScreen() {
         <View style={styles.disclaimerCard}>
           <ShieldCheck size={20} color={Colors.primary} />
           <Text style={styles.disclaimerText}>
-            This application is a personal budgeting and expense management tool. All financial data is stored locally on your device and is never shared or sold.
+            This application is a personal budgeting and expense management tool. All financial data is stored locally on your device.
           </Text>
         </View>
 
-        <Text style={styles.versionText}>SpendOrbit v1.0 — Release Ready</Text>
+        <Text style={styles.versionText}>Daily Money Coach v1.0</Text>
       </ScrollView>
 
-      {/* Edit Plan Modal — bottom sheet style with KAV for keyboard */}
+      {/* Edit Plan Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent statusBarTranslucent>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -228,14 +227,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xxl,
   },
   header: {
     paddingVertical: Spacing.md,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '800',
     color: Colors.textPrimary,
     marginBottom: 2,
@@ -247,18 +246,18 @@ const styles = StyleSheet.create({
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
     marginVertical: Spacing.md,
     gap: Spacing.md,
   },
   avatarCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: Colors.primarySubtle,
     justifyContent: 'center',
     alignItems: 'center',
@@ -285,9 +284,10 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.textMuted,
+    fontSize: 11,
+    fontWeight: '800',
+    color: Colors.textSecondary,
+    letterSpacing: 1,
   },
   editButton: {
     paddingHorizontal: Spacing.sm,
@@ -299,18 +299,18 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
   planCard: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
     marginBottom: Spacing.lg,
   },
   planRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
   planLabelGroup: {
     flexDirection: 'row',
@@ -325,19 +325,19 @@ const styles = StyleSheet.create({
   planValue: {
     fontSize: 15,
     fontWeight: '800',
-    color: Colors.primary,
+    color: Colors.textPrimary,
     flexShrink: 0,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.cardBorder,
+    backgroundColor: '#F3F4F6',
     marginVertical: 4,
   },
   menuContainer: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
     marginBottom: Spacing.lg,
   },
   menuItem: {
@@ -354,10 +354,12 @@ const styles = StyleSheet.create({
   disclaimerCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#FFFFFF',
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     gap: Spacing.md,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
     marginBottom: Spacing.lg,
   },
   disclaimerText: {
@@ -372,23 +374,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: Spacing.sm,
   },
-  // Modal styles — bottom sheet
   kavWrapper: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   modalBackdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
-    backgroundColor: Colors.cardBackground,
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
     padding: Spacing.lg,
     paddingBottom: Spacing.xxl,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
     maxHeight: '85%',
   },
   modalTitle: {
@@ -400,17 +401,19 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
     marginBottom: 4,
   },
   modalInput: {
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#F9FAFB',
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: 12,
     fontSize: 15,
     fontWeight: '700',
     color: Colors.textPrimary,
+    borderColor: '#E5E7EB',
+    borderWidth: 1,
     marginBottom: Spacing.md,
   },
   modalActions: {
@@ -422,7 +425,7 @@ const styles = StyleSheet.create({
   cancelBtn: {
     flex: 1,
     height: 48,
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#F3F4F6',
     borderRadius: BorderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
@@ -443,6 +446,6 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0B0F17',
+    color: '#FFF',
   },
 });

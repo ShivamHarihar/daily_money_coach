@@ -1,37 +1,43 @@
 import { Tabs } from 'expo-router';
-import { History, Home, PieChart, Target, User } from 'lucide-react-native';
+import { History, Home, PieChart, Target, User, Plus } from 'lucide-react-native';
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../src/constants/theme';
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
 
-  // Bottom padding inside the tab bar:
-  // iOS home indicator  → insets.bottom (34px on notch phones, 0 on older ones)
-  // Android 3-btn nav   → insets.bottom (~24-48px)
-  // Android gesture nav → insets.bottom (~16-24px)  
-  // Android no nav      → insets.bottom = 0 → use 4px minimum
-  const bottomPad = Math.max(insets.bottom, Platform.OS === 'android' ? 4 : 0);
-
-  // Total bar height = icon+label zone (52px) + system nav spacing
-  const tabBarHeight = 52 + bottomPad;
+  // Premium floating layout configuration
+  // Showing exactly 5 options: Home, List, Add (floating custom button), Goals, More
+  const bottomPad = Math.max(insets.bottom, 12);
+  const tabBarHeight = 62 + bottomPad;
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.cardBackground,
-          borderTopColor: Colors.cardBorder,
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E5E7EB',
           borderTopWidth: 1,
           height: tabBarHeight,
           paddingBottom: bottomPad,
-          paddingTop: 6,
+          paddingTop: 8,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          elevation: 16,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
         },
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarActiveTintColor: '#0D9488', // Green-Teal active tint color matching mockup theme
+        tabBarInactiveTintColor: '#6B7280', // Slate gray
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarItemStyle: styles.tabBarItem,
       }}
@@ -40,35 +46,53 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="budget"
-        options={{
-          title: 'Budget',
-          tabBarIcon: ({ color, size }) => <PieChart size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="goals"
-        options={{
-          title: 'Goals',
-          tabBarIcon: ({ color, size }) => <Target size={size} color={color} />,
+          tabBarIcon: ({ color }) => <Home size={20} color={color} />,
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
-          title: 'History',
-          tabBarIcon: ({ color, size }) => <History size={size} color={color} />,
+          title: 'Transactions',
+          tabBarIcon: ({ color }) => <History size={20} color={color} />,
+        }}
+      />
+      {/* Floating Center button to add expense */}
+      <Tabs.Screen
+        name="add-action"
+        options={{
+          title: '',
+          tabBarIcon: () => (
+            <View style={styles.floatingCenterBtn}>
+              <Plus size={24} color="#FFFFFF" />
+            </View>
+          ),
+        }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate('add-expense');
+          },
+        })}
+      />
+      <Tabs.Screen
+        name="goals"
+        options={{
+          title: 'Goals',
+          tabBarIcon: ({ color }) => <Target size={20} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
+          tabBarIcon: ({ color }) => <User size={20} color={color} />,
+        }}
+      />
+      {/* Hide stats page from bottom bar */}
+      <Tabs.Screen
+        name="budget"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
@@ -77,10 +101,27 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBarLabel: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
+    marginTop: 2,
   },
   tabBarItem: {
-    paddingTop: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  floatingCenterBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#0D9488', // Premium Teal background
+    justifyContent: 'center',
+    alignItems: 'center',
+    top: -10, // pull button upwards
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
 });

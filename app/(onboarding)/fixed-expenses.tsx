@@ -39,10 +39,10 @@ export default function FixedExpensesScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
@@ -158,7 +158,7 @@ export default function FixedExpensesScreen() {
         <View style={styles.footer}>
           <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8} onPress={handleNext}>
             <Text style={styles.buttonText}>Continue</Text>
-            <ArrowRight size={20} color="#000" />
+            <ArrowRight size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xl,
   },
   header: {
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
   },
   sectionHeader: {
     marginTop: Spacing.sm,
@@ -205,10 +205,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   totalBadge: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
     padding: Spacing.md,
     alignItems: 'center',
     marginBottom: Spacing.lg,
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
     marginBottom: 2,
   },
   totalAmount: {
@@ -230,17 +230,17 @@ const styles = StyleSheet.create({
   fieldRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
+    backgroundColor: '#FFFFFF',
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
   },
   fieldIcon: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#EFF6FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   fieldInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#F9FAFB',
     borderRadius: BorderRadius.sm,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
@@ -276,12 +276,12 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   footer: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
   },
   primaryButton: {
     width: '100%',
-    height: 56,
+    height: 54,
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius.lg,
     flexDirection: 'row',
@@ -292,6 +292,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0B0F17',
+    color: '#FFF',
   },
 });

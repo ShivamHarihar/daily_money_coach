@@ -53,41 +53,16 @@ export default function GoalsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Savings & Goals</Text>
-            <Text style={styles.subtitle}>Track your monthly target and long-term milestones.</Text>
+            <Text style={styles.title}>My Goals</Text>
+            <Text style={styles.subtitle}>Set financial goals and track your progress.</Text>
           </View>
           <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-            <Plus size={20} color="#0B0F17" />
+            <Plus size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
-
-        {/* Primary Monthly Target Card */}
-        <View style={styles.primaryTargetCard}>
-          <View style={styles.primaryHeader}>
-            <PiggyBank size={24} color={Colors.primary} />
-            <Text style={styles.primaryTitle}>Monthly Savings Plan</Text>
-          </View>
-          <Text style={styles.primaryAmount} numberOfLines={1} adjustsFontSizeToFit>
-            {formatCurrency(summary.savingsTarget)}/month
-          </Text>
-
-          <View style={styles.progressBg}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${summary.savingsProgressPercent}%` },
-              ]}
-            />
-          </View>
-          <Text style={styles.progressSub}>
-            {summary.savingsProgressPercent}% of your monthly target saved so far this month
-          </Text>
-        </View>
-
-        <Text style={styles.sectionLabel}>Your Savings Milestones</Text>
 
         {savingsGoals.length === 0 ? (
           <View style={styles.emptyCard}>
@@ -108,40 +83,40 @@ export default function GoalsScreen() {
               return (
                 <View key={goal.id} style={styles.goalCard}>
                   <View style={styles.goalHeader}>
-                    <View style={styles.goalTitleGroup}>
-                      <View style={styles.goalIconCircle}>
-                        <Target size={18} color={Colors.primary} />
-                      </View>
-                      <Text style={styles.goalName} numberOfLines={1}>{goal.name}</Text>
+                    <Text style={styles.goalName} numberOfLines={1}>{goal.name}</Text>
+                    <View style={styles.pctBadge}>
+                      <Text style={styles.pctBadgeText}>{progressPct}%</Text>
                     </View>
-
-                    <TouchableOpacity
-                      onPress={() => handleDeleteGoal(goal.id, goal.name)}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    >
-                      <Trash2 size={16} color={Colors.textMuted} />
-                    </TouchableOpacity>
                   </View>
 
                   <View style={styles.goalAmountRow}>
                     <Text style={styles.goalCurrent}>
-                      Saved: {formatCurrency(goal.current_amount)}
+                      {formatCurrency(goal.current_amount)} <Text style={{ color: Colors.textSecondary, fontWeight: '400' }}>/ {formatCurrency(goal.target_amount)}</Text>
                     </Text>
-                    <Text style={styles.goalTarget}>
-                      Target: {formatCurrency(goal.target_amount)}
-                    </Text>
+                    <TouchableOpacity
+                      onPress={() => handleDeleteGoal(goal.id, goal.name)}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Trash2 size={15} color={Colors.textMuted} />
+                    </TouchableOpacity>
                   </View>
 
                   <View style={styles.goalProgressBg}>
                     <View style={[styles.goalProgressFill, { width: `${progressPct}%` }]} />
                   </View>
 
-                  <Text style={styles.goalPercentText}>{progressPct}% achieved</Text>
+                  <Text style={styles.goalDateSub}>Target Date: 31 Dec 2026</Text>
                 </View>
               );
             })}
           </View>
         )}
+
+        {/* Motivational Card at bottom from screenshot 5 */}
+        <View style={styles.disciplineCard}>
+          <Text style={styles.disciplineText}>Stay disciplined today</Text>
+          <Text style={styles.disciplineSub}>To enjoy a better tomorrow! ✨</Text>
+        </View>
       </ScrollView>
 
       {/* Add Goal Modal */}
@@ -159,7 +134,7 @@ export default function GoalsScreen() {
               style={styles.modalInput}
               value={goalName}
               onChangeText={setGoalName}
-              placeholder="e.g. Emergency Fund, New Bike"
+              placeholder="e.g. Emergency Fund, New Laptop"
               placeholderTextColor={Colors.textMuted}
             />
 
@@ -195,8 +170,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   scrollContent: {
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: 110, // clear tab bar offset space
   },
   header: {
     flexDirection: 'row',
@@ -205,7 +180,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '800',
     color: Colors.textPrimary,
     marginBottom: 2,
@@ -218,66 +193,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.primary,
+    backgroundColor: '#0D9488', // Teal highlight color
     justifyContent: 'center',
     alignItems: 'center',
   },
-  primaryTargetCard: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    borderWidth: 2,
-    borderColor: Colors.primary,
-    marginVertical: Spacing.md,
-  },
-  primaryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: Spacing.xs,
-  },
-  primaryTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-  },
-  primaryAmount: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: Colors.primary,
-  },
-  progressBg: {
-    width: '100%',
-    height: 8,
-    backgroundColor: Colors.surfaceHover,
-    borderRadius: 4,
-    marginVertical: Spacing.md,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: Colors.primary,
-    borderRadius: 4,
-  },
-  progressSub: {
-    fontSize: 12,
-    color: Colors.textMuted,
-  },
-  sectionLabel: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.textMuted,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.md,
-  },
   emptyCard: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    // removed borderStyle: 'dashed' — not supported on Android
+    borderColor: '#F3F4F6',
   },
   emptyTitle: {
     fontSize: 15,
@@ -293,13 +219,14 @@ const styles = StyleSheet.create({
   },
   goalsList: {
     gap: Spacing.md,
+    marginVertical: Spacing.sm,
   },
   goalCard: {
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.md,
-    padding: Spacing.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
   },
   goalHeader: {
     flexDirection: 'row',
@@ -307,76 +234,88 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.xs,
   },
-  goalTitleGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    flex: 1,
-    marginRight: Spacing.sm,
-  },
-  goalIconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.surfaceHover,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexShrink: 0,
-  },
   goalName: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: Colors.textPrimary,
     flex: 1,
+  },
+  pctBadge: {
+    backgroundColor: '#E6F4EA',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.full,
+  },
+  pctBadgeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#137333',
   },
   goalAmountRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 4,
+    alignItems: 'center',
+    marginTop: 2,
   },
   goalCurrent: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.primary,
-  },
-  goalTarget: {
-    fontSize: 13,
-    color: Colors.textMuted,
+    fontSize: 15,
+    fontWeight: '800',
+    color: Colors.textPrimary,
   },
   goalProgressBg: {
     width: '100%',
-    height: 6,
-    backgroundColor: Colors.surfaceHover,
-    borderRadius: 3,
+    height: 8,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 4,
     marginVertical: Spacing.sm,
     overflow: 'hidden',
   },
   goalProgressFill: {
     height: '100%',
-    backgroundColor: Colors.primary,
-    borderRadius: 3,
+    backgroundColor: '#0D9488', // Green-Teal
+    borderRadius: 4,
   },
-  goalPercentText: {
+  goalDateSub: {
     fontSize: 11,
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+    marginTop: 2,
   },
-  // Modal styles
+  disciplineCard: {
+    backgroundColor: '#E6F4EA',
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    marginTop: Spacing.lg,
+    borderWidth: 1,
+    borderColor: '#CEEAD6',
+  },
+  disciplineText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#137333',
+  },
+  disciplineSub: {
+    fontSize: 12,
+    color: '#137333',
+    marginTop: 2,
+  },
   kavWrapper: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   modalBackdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
-    backgroundColor: Colors.cardBackground,
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
     padding: Spacing.lg,
     paddingBottom: Spacing.xxl,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
   },
   modalTitle: {
     fontSize: 18,
@@ -387,16 +326,18 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
     marginBottom: 4,
   },
   modalInput: {
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#F9FAFB',
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: 12,
     fontSize: 14,
     color: Colors.textPrimary,
+    borderColor: '#E5E7EB',
+    borderWidth: 1,
     marginBottom: Spacing.md,
   },
   modalActions: {
@@ -407,7 +348,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
     height: 48,
-    backgroundColor: Colors.surfaceHover,
+    backgroundColor: '#F3F4F6',
     borderRadius: BorderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
@@ -420,7 +361,7 @@ const styles = StyleSheet.create({
   createButton: {
     flex: 1,
     height: 48,
-    backgroundColor: Colors.primary,
+    backgroundColor: '#0D9488',
     borderRadius: BorderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
@@ -428,6 +369,6 @@ const styles = StyleSheet.create({
   createText: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0B0F17',
+    color: '#FFF',
   },
 });

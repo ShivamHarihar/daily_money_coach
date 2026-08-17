@@ -1,4 +1,4 @@
-import { Search, Trash2 } from 'lucide-react-native';
+import { Search, Trash2, ArrowUpRight, ArrowDownRight, RefreshCw } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -13,10 +13,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BorderRadius, Colors, Spacing } from '../../src/constants/theme';
 import { useFinanceStore } from '../../src/store/useFinanceStore';
 import { formatCurrency } from '../../src/utils/calculator';
+import { Expense } from '../../src/types';
 
 export default function HistoryScreen() {
   const { expenses, deleteExpense } = useFinanceStore();
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Essentials vs Lifestyle classification configuration
+  const essentialsCatIds = ['food', 'transport', 'bills', 'rent', 'emi', 'health', 'education'];
 
   const filteredExpenses = expenses.filter((exp) => {
     if (!searchQuery) return true;
@@ -26,6 +30,22 @@ export default function HistoryScreen() {
       exp.note?.toLowerCase().includes(query) ||
       exp.payment_method?.toLowerCase().includes(query)
     );
+  });
+
+  // Calculate stats for current month
+  const now = new Date();
+  let essentialsTotal = 0;
+  let lifestyleTotal = 0;
+
+  filteredExpenses.forEach(exp => {
+    const d = new Date(exp.date);
+    if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+      if (essentialsCatIds.includes(exp.category_id)) {
+        essentialsTotal += exp.amount;
+      } else {
+        lifestyleTotal += exp.amount;
+      }
+    }
   });
 
   const handleDelete = (id: string, category?: string, amount?: number) => {
@@ -39,12 +59,42 @@ export default function HistoryScreen() {
     );
   };
 
-  // Header rendered inside FlatList so it scrolls together and keyboard avoidance works
+  // Grouping by Date string
+  const groupedData: { title: string; data: Expense[]; total: number }[] = [];
+  filteredExpenses.forEach(exp => {
+    const dateStr = exp.date; // YYYY-MM-DD
+    const match = groupedData.find(g => g.title === dateStr);
+    if (match) {
+      match.data.push(exp);
+      match.total += exp.amount;
+    } else {
+      groupedData.push({ title: dateStr, data: [exp], total: exp.amount });
+    }
+  });
+
+  // Sort grouped dates descending
+  groupedData.sort((a, b) => b.title.localeCompare(a.title));
+
+  const formatGroupHeader = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (d.toDateString() === today.toDateString()) {
+      return 'TODAY';
+    } else if (d.toDateString() === yesterday.toDateString()) {
+      return 'YESTERDAY';
+    } else {
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', weekday: 'short' }).toUpperCase();
+    }
+  };
+
   const ListHeader = (
     <View style={styles.header}>
-      <Text style={styles.title}>Expense History</Text>
+      <Text style={styles.title}>Transactions</Text>
       <Text style={styles.subtitle}>
-        All transactions logged locally ({expenses.length} total).
+        {filteredExpenses.length} transactions • {now.toLocaleString('default', { month: 'long' })} {now.getFullYear()}
       </Text>
 
       {/* Search Bar */}
@@ -54,59 +104,93 @@ export default function HistoryScreen() {
           style={styles.searchInput}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Search category, note or payment..."
+          placeholder="Search transactions..."
           placeholderTextColor={Colors.textMuted}
         />
+      </View>
+
+      {/* Type Row indicators from Screenshot 4 */}
+      <View style={styles.typeStatsRow}>
+        <View style={styles.typeStatBox}>
+          <Text style={[styles.typeIndicatorDot, { color: Colors.essentials }]}>● Essentials</Text>
+          <Text style={[styles.typeStatValue, { color: Colors.essentials }]}>{formatCurrency(essentialsTotal)}</Text>
+        </View>
+        <View style={styles.typeStatBox}>
+          <Text style={[styles.typeIndicatorDot, { color: Colors.lifestyle }]}>● Lifestyle</Text>
+          <Text style={[styles.typeStatValue, { color: Colors.lifestyle }]}>{formatCurrency(lifestyleTotal)}</Text>
+        </View>
+        <View style={styles.typeStatBox}>
+          <Text style={[styles.typeIndicatorDot, { color: Colors.savings }]}>● Savings</Text>
+          <Text style={[styles.typeStatValue, { color: Colors.savings }]}>{formatCurrency(0)}</Text>
+        </View>
       </View>
     </View>
   );
 
+  // Prepare flat layout list with headers injected
+  const flatItemsList: any[] = [];
+  groupedData.forEach(group => {
+    flatItemsList.push({ type: 'header', title: formatGroupHeader(group.title), total: group.total });
+    group.data.forEach(item => {
+      flatItemsList.push({ type: 'item', ...item });
+    });
+  });
+
   return (
     <SafeAreaView style={styles.container}>
-      {filteredExpenses.length === 0 ? (
-        // Show header + empty state together in a single scroll container
-        <FlatList
-          data={[]}
-          keyExtractor={() => 'empty'}
-          ListHeaderComponent={ListHeader}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyTitle}>No expenses found</Text>
-              <Text style={styles.emptySub}>
-                {searchQuery
-                  ? 'Try searching with a different term'
-                  : 'Start logging expenses to build your history!'}
-              </Text>
-            </View>
-          }
-          contentContainerStyle={styles.listContent}
-        />
-      ) : (
-        <FlatList
-          data={filteredExpenses}
-          keyExtractor={(item) => item.id}
-          ListHeaderComponent={ListHeader}
-          contentContainerStyle={styles.listContent}
-          keyboardShouldPersistTaps="handled"
-          renderItem={({ item }) => (
-            <View style={styles.expenseRow}>
-              <View
-                style={[
-                  styles.categoryBadge,
-                  { backgroundColor: item.category_color || Colors.primary },
-                ]}
-              >
-                <Text style={styles.categoryBadgeText}>
-                  {item.category_name?.charAt(0) || 'E'}
-                </Text>
+      <FlatList
+        data={flatItemsList}
+        keyExtractor={(item, index) => item.type === 'header' ? `h-${item.title}-${index}` : item.id}
+        ListHeaderComponent={ListHeader}
+        contentContainerStyle={styles.listContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>No transactions found</Text>
+            <Text style={styles.emptySub}>
+              {searchQuery ? 'Try another query' : 'Start logging items!'}
+            </Text>
+          </View>
+        }
+        renderItem={({ item }) => {
+          if (item.type === 'header') {
+            return (
+              <View style={styles.groupHeaderRow}>
+                <Text style={styles.groupHeaderText}>{item.title}</Text>
+                <Text style={styles.groupHeaderTotal}>{formatCurrency(item.total)}</Text>
               </View>
+            );
+          }
 
-              <View style={styles.expenseDetails}>
-                <Text style={styles.expenseCategory} numberOfLines={1}>{item.category_name}</Text>
-                {item.note ? <Text style={styles.expenseNote} numberOfLines={1}>{item.note}</Text> : null}
-                <Text style={styles.expenseDate}>
-                  {item.date} • {item.payment_method}
-                </Text>
+          const isEssential = essentialsCatIds.includes(item.category_id);
+
+          return (
+            <View style={styles.expenseRow}>
+              <View style={styles.transLeft}>
+                <View
+                  style={[
+                    styles.categoryBadge,
+                    { backgroundColor: item.category_color || Colors.primary },
+                  ]}
+                >
+                  <Text style={styles.categoryBadgeText}>
+                    {item.category_name?.charAt(0).toUpperCase() || 'E'}
+                  </Text>
+                </View>
+
+                <View style={styles.expenseDetails}>
+                  <Text style={styles.expenseCategory} numberOfLines={1}>
+                    {item.note || item.category_name}
+                  </Text>
+                  <View style={styles.tagRow}>
+                    <Text style={styles.tagLabel}>{item.category_name}</Text>
+                    <View style={styles.tagDotSeparator} />
+                    <Text style={[styles.typeBadgeTag, { color: isEssential ? Colors.essentials : Colors.lifestyle }]}>
+                      {isEssential ? 'Essentials' : 'Lifestyle'}
+                    </Text>
+                  </View>
+                </View>
               </View>
 
               <View style={styles.amountGroup}>
@@ -115,13 +199,13 @@ export default function HistoryScreen() {
                   onPress={() => handleDelete(item.id, item.category_name, item.amount)}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <Trash2 size={16} color={Colors.textMuted} />
+                  <Trash2 size={14} color={Colors.textMuted} />
                 </TouchableOpacity>
               </View>
             </View>
-          )}
-        />
-      )}
+          );
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -132,12 +216,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   header: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.sm,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '800',
     color: Colors.textPrimary,
     marginBottom: 2,
@@ -150,33 +234,83 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
-    borderRadius: BorderRadius.md,
-    borderColor: Colors.cardBorder,
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
+    borderColor: '#F3F4F6',
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingVertical: 10,
     gap: Spacing.sm,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md,
   },
   searchInput: {
     flex: 1,
     fontSize: 14,
     color: Colors.textPrimary,
   },
+  typeStatsRow: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: BorderRadius.xl,
+    paddingVertical: 12,
+    paddingHorizontal: Spacing.sm,
+    justifyContent: 'space-around',
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+    marginBottom: Spacing.md,
+  },
+  typeStatBox: {
+    alignItems: 'center',
+  },
+  typeIndicatorDot: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+    marginBottom: 4,
+  },
+  typeStatValue: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
   listContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xxl,
-    gap: Spacing.sm,
+  },
+  groupHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
+  },
+  groupHeaderText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: Colors.textSecondary,
+    letterSpacing: 1,
+  },
+  groupHeaderTotal: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: Colors.textSecondary,
   },
   expenseRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.cardBackground,
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
+    marginVertical: 4,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: '#F3F4F6',
+  },
+  transLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    flex: 1,
   },
   categoryBadge: {
     width: 38,
@@ -184,7 +318,6 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: Spacing.md,
     flexShrink: 0,
   },
   categoryBadgeText: {
@@ -194,21 +327,31 @@ const styles = StyleSheet.create({
   },
   expenseDetails: {
     flex: 1,
-    marginRight: Spacing.sm,
   },
   expenseCategory: {
     fontSize: 14,
     fontWeight: '700',
     color: Colors.textPrimary,
   },
-  expenseNote: {
-    fontSize: 12,
-    color: Colors.textSecondary,
+  tagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
   },
-  expenseDate: {
+  tagLabel: {
     fontSize: 11,
     color: Colors.textMuted,
-    marginTop: 2,
+  },
+  tagDotSeparator: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: Colors.textMuted,
+    marginHorizontal: 6,
+  },
+  typeBadgeTag: {
+    fontSize: 11,
+    fontWeight: '700',
   },
   amountGroup: {
     alignItems: 'flex-end',
@@ -218,11 +361,10 @@ const styles = StyleSheet.create({
   expenseAmount: {
     fontSize: 14,
     fontWeight: '800',
-    color: Colors.danger,
+    color: Colors.textPrimary,
   },
   emptyContainer: {
     paddingTop: Spacing.xxl,
-    paddingHorizontal: Spacing.lg,
     alignItems: 'center',
   },
   emptyTitle: {
