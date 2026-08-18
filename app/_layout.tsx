@@ -44,7 +44,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       {/* Dark status bar content for light background */}
-      <StatusBar style="dark" backgroundColor={Colors.background} />
+      <StatusBar style="dark" {...({ backgroundColor: Colors.background } as any)} />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -84,7 +84,7 @@ export default function RootLayout() {
 
 const styles = StyleSheet.create({
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
